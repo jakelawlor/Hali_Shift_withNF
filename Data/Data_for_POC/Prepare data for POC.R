@@ -175,11 +175,11 @@ write.csv(RE_DAT,(here::here("Data/Data_for_POC/POC_RangeEdge.csv")), row.names 
 str(RE_DAT)
 
 #5 CENTRE OF GRAVITY----
+centroid_data_Reg<- read.csv(here::here("2025-04-23/Output/Shift_Indicators/seasonal_centroid_data_region.csv"))
+head(centroid_data_Reg)
 #6 DISTANCE TO BORDER----
 
 
-centroid_data_Reg<- read.csv(here::here("2025-04-23/Output/Shift_Indicators/seasonal_centroid_data_region.csv"))
-head(centroid_data_Reg)
 
 
 
