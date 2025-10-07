@@ -1,0 +1,415 @@
+---
+title: "Data for DSAF POC"
+author: "Kiyomi Ferguson"
+date: "2025-10-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(patchwork)
+library(here)
+```
+
+Assembled in **Prepare data for POC.R**, the **Data_for_POC folder** contains data for the temporal (and spatial where applicable*) trends for the 6 shift indicators, calculated based on Atlantic halibut abundance estimates form SDM output. 
+
+1. Abundance*: trend in total estimated abundance  
+
+2. Area Occupied: the total area containing 90% of the abundance 
+
+3. Abundance-Weighted Depth: the average depth, weighted by abundance, the average depth where most of the population is found, (telling us the depth preference) 
+
+4. Range Edge*: the geographical minimum (5%) and maximum (95%) of modeled abundance 
+
+5. Centre of Gravity*: the average latitude and longitude, weighted by abundance 
+
+6. Distance from COG to border : the shortest path (without crossing land) from the COG to the nearest point on the international border 
+
+## 1. Abundance 
+
+**Data: POC_Abundance.csv**
+
+Total annual estimated spring-time abundance per region. Derived from indexed estimates calculated with the model run. 
+
+* Region: USA, Canada
+
+* Estimate: Total annual estimated spring-time abundance 
+
+* SD: Standard Deviation 
+
+* Year: 1990-2023
+
+* X: Unique identifier
+
+```{r abundance data, echo=FALSE}
+POC_Abundance<-read.csv(here::here("Data/Data_for_POC/POC_Abundance.csv"))
+str(POC_Abundance)
+
+```
+
+### Trends in Abundance Estimate 
+
+```{r abundance plot, echo=FALSE, fig.width=6, fig.height=4}
+ggplot(POC_Abundance, 
+       aes(x = Year, y = Estimate, colour = Region, group = Region)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = Estimate - SD,
+                  ymax = Estimate + SD,
+                  fill = Region), 
+              alpha = 0.25, colour = NA) +
+  theme_bw() +
+  labs(x = "Year", y = "Estimate",
+       colour = "Region", fill = "Region")
+
+```
+
+## 2. Area Occupied 
+
+**Data: POC_AreaOccupied.csv**
+
+The total area containing 50%, 75%, 90%, and 95% of the abundance. This calculation first took the Abundance estimates per grid location, subset for Spring, calculated the total annual spring abundance by region and year ($TotalSpringAbundance). Next, it Calculated how much area (in km²) is needed to account for 50%, 75%, 90%, and 95% of total abundance within each Region and Year of the dataset using a running total of abundance as cells are added from highest to lowest abundance.
+
+* Region: USA or Canada 
+
+* Year: 1990-2023
+
+* Threshold:  50%, 75%, 90%, 95% 
+
+* Total_Abundance: Total springtime abundance in that Region and Year (sum of all cells).
+
+* Total_Area: Total area (km²) of all grid cells in that Region and Year (cumulative running total).
+
+* Area_Threshold: The total area (km²) required to reach that abundance threshold.
+
+* Percent_Area_Used: The percentage of total area needed to contain the threshold proportion of abundance.
+
+* n_cells: Number of spatial cells required to reach the threshold abundance.
+
+* Area_Efficiency: = space used per unit of abundance...is abundance more concentrated or dispersed
+
+```{r AO data, echo=FALSE}
+POC_AO<-read.csv(here::here("Data/Data_for_POC/POC_AreaOccupied.csv"))
+str(POC_AO)
+POC_AO_sub<-subset(POC_AO, POC_AO$Threshold ==90)
+```
+
+### Trends in : Total area occupied ( 90% of abundance), Percent of the total area used, Area Efficiency  
+
+```{r AO plot, echo=FALSE, fig.width=12, fig.height=4}
+AO1<-ggplot(POC_AO_sub, 
+       aes(x = Year, y = Area_Threshold, colour = Region, group = Region)) +
+  geom_line() +
+  theme_bw() +
+  labs(x = "Year", y = "Total Area occupied (90% Abundance)",
+       colour = "Region", fill = "Region")+
+  theme(legend.position = "none")
+
+AO2<-ggplot(POC_AO_sub, 
+       aes(x = Year, y = Percent_Area_Used, colour = Region, group = Region)) +
+  geom_line() +
+  theme_bw() +
+  labs(x = "Year", y = "Percent of Area Used (90% Abundance)",
+       colour = "Region", fill = "Region")+
+  theme(legend.position = "none")
+
+AO3<-ggplot(POC_AO_sub, 
+            aes(x = Year, y =Area_Efficiency , colour = Region, group = Region)) +
+  geom_line() +
+  theme_bw() +
+  labs(x = "Year", y = "Area Efficiency (90% Abundance)",
+       colour = "Region", fill = "Region")
+
+AO1 + AO2 + AO3 + plot_layout(widths = c(1, 1, 1.2))
+```
+
+## 3 Abundance-Weighted Depth
+
+**Data: POC_AWD.csv**
+
+The mean, median, Q5, and Q95 depth, weighted by estimated abundance values 
+
+* Region: USA, Canada
+
+* Year: 1990-2023 
+
+* Depth distribution values: Mean, Median, Q5, Q95 
+
+```{r AWD data, echo=FALSE}
+POC_AWD<-read.csv(here::here("Data/Data_for_POC/POC_AWD.csv"))
+str(POC_AWD)
+
+```
+
+### Trends in Abundance-Weighted Depth
+
+```{r AWD plot, echo=FALSE, fig.width=6, fig.height=4}
+
+ggplot(POC_AWD, 
+       aes(x = Year, y = Depth_Median , colour = Region, group = Region)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = Depth_Q5,
+                  ymax = Depth_Q95,
+                  fill = Region), 
+              alpha = 0.25, colour = NA) +
+  theme_bw() +
+  labs(x = "Year", y = "Depth",
+       colour = "Region", fill = "Region")
+```
+
+## 4. Range Edge 
+
+**Data: POC_RangeEdge.csv**
+
+Annual location of leading and trailing edges for the entire stock 
+The 5th percentile (trailing edge), 50th, and  95th percentile (leading edge) of the species' spatial distribution were calculated using a weighted quantile of the coordinate values (weighted by abundance estimates).   
+
+* Year: 1990-2023
+
+* Trailing Edge Variables (5th, USA): Estimate_km_E_quantile_0.05, Estimate_km_N_quantile_0.05, Std_Dev_km_N_quantile_0.05, Std_Dev_km_E_quantile_0.05
+
+* Centroid Variables (50th): Estimate_km_E_quantile_0.5, Estimate_km_N_quantile_0.5, Std_Dev_km_E_quantile_0.5, Std_Dev_km_N_quantile_0.5
+
+* Leading Edge Variables (95th, Canada): Estimate_km_E_quantile_0.95, Estimate_km_N_quantile_0.95,  Std_Dev_km_E_quantile_0.95, Std_Dev_km_N_quantile_0.95
+
+```{r RE data, echo=FALSE}
+RE_DAT<- read.csv(here::here("Data/Data_for_POC/POC_RangeEdge.csv"))
+str(RE_DAT)
+```
+
+### Trends in Leading and Trailing Edges 
+```{r Range Edge plot, echo=FALSE, warning=FALSE, message=FALSE,  results='hide', fig.width=10, fig.height=9}
+#Prep-work for  mapping Range Edge, copied from 4_FancyFigs_RangeEdgeEAO_KFedits.R (line 439)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(rnaturalearthhires)
+library(dplyr)
+library(geosphere)
+library(ggpmisc)
+#prep data for plotting
+#separate each set of coordinates into their own objects
+Est_0.05<-RE_DAT[ , c("Year","Estimate_km_E_quantile_0.05", "Estimate_km_N_quantile_0.05" )]
+Est_0.5<-RE_DAT[ , c("Year", "Estimate_km_E_quantile_0.5",  "Estimate_km_N_quantile_0.5")] 
+Est_0.95<-RE_DAT[ , c("Year", "Estimate_km_E_quantile_0.95",  "Estimate_km_N_quantile_0.95")] 
+Std_0.05<-RE_DAT[ , c("Year", "Std_Dev_km_E_quantile_0.05",  "Std_Dev_km_N_quantile_0.05")]
+Std_0.5<-RE_DAT[ , c("Year", "Std_Dev_km_E_quantile_0.5", "Std_Dev_km_N_quantile_0.5")] 
+Std_0.95<-RE_DAT[ , c("Year", "Std_Dev_km_E_quantile_0.95", "Std_Dev_km_N_quantile_0.95")] 
+
+# Convert from km to m,  make sf object in local UTM (meters), and reproject
+convert_km_to_wgs84 <- function(df, east_col, north_col) {
+  # Convert from km to m
+  df[[east_col]] <- df[[east_col]] * 1000
+  df[[north_col]] <- df[[north_col]] * 1000
+  # Make sf object in local CRS
+  pts_local <- st_as_sf(df, coords = c(east_col, north_col), crs = "EPSG:32621")
+  # Reproject to WGS84
+  pts_wgs84 <- st_transform(pts_local, crs = 4326)
+  return(pts_wgs84)
+}
+
+#Trailing edge Estimates
+Est_0.05_pts <- convert_km_to_wgs84(
+  Est_0.05,
+  east_col = "Estimate_km_E_quantile_0.05",
+  north_col = "Estimate_km_N_quantile_0.05"
+)
+#Mean Estimates
+Est_0.5_pts <- convert_km_to_wgs84(
+  Est_0.5,
+  east_col = "Estimate_km_E_quantile_0.5",
+  north_col = "Estimate_km_N_quantile_0.5"
+)
+#Leadind edge Estimates
+Est_0.95_pts <- convert_km_to_wgs84(
+  Est_0.95,
+  east_col = "Estimate_km_E_quantile_0.95",
+  north_col = "Estimate_km_N_quantile_0.95"
+)
+#Trailing edge Standard Deviation
+Std_0.05_pts <- convert_km_to_wgs84(
+  Std_0.05,
+  east_col = "Std_Dev_km_E_quantile_0.05",
+  north_col = "Std_Dev_km_N_quantile_0.05"
+)
+#Mean Standard Deviation
+Std_0.5_pts <- convert_km_to_wgs84(
+  Std_0.5,
+  east_col = "Std_Dev_km_E_quantile_0.5",
+  north_col = "Std_Dev_km_N_quantile_0.5"
+)
+#Leading edge Standard Deviation
+Std_0.95_pts <- convert_km_to_wgs84(
+  Std_0.95,
+  east_col = "Std_Dev_km_E_quantile_0.95",
+  north_col = "Std_Dev_km_N_quantile_0.95"
+)
+
+#Prep spatial data for plotting: 
+Land <- ne_countries(scale = "large", returnclass = "sf")#high resolution land shapefile
+crs <- st_crs(Std_0.95_pts)
+#bounding box for plotting: 
+study_area_bbox <- st_bbox(c(xmin = -80, ymin = 30, xmax = -44, ymax = 60))
+study_area_polygon <- st_as_sfc(study_area_bbox)
+st_crs(study_area_polygon) <- crs
+
+#Read shapefiles match projections, and clip to bounding box
+  EEZ <- st_read(here::here("", "Data/Mapping_shapefiles/EEZ.shp"))
+  contours <- st_read(here::here("", "Data/Mapping_shapefiles/GEBCO_DepthContours.shp"))
+  NAFO <-st_read(here::here("", "Data/Mapping_shapefiles/Divisions.shp"))
+  Hague <-  st_read(here::here("", "Data/Mapping_shapefiles/HagueLine.shp"))
+    EEZ <- st_transform (EEZ, crs)
+    contours <- st_transform (contours, crs)
+    NAFO <- st_transform (NAFO, crs)
+    Hague <- st_transform (Hague, crs)
+      sf::sf_use_s2(FALSE)   # revert to GEOS-based operations
+      EEZ <- st_intersection(EEZ, study_area_polygon)
+      contours <- st_intersection(contours, study_area_polygon)
+      NAFO <- st_intersection(NAFO, study_area_polygon)
+
+#Plotting function for mapping leading and trailing edges
+RangeEdge_Mapped <-  ggplot() +
+  #start with mapping shapefiles 
+  geom_sf(data = contours, color="lightblue", linewidth = .4) +
+  geom_sf(data = NAFO, color="dimgrey", fill = NA) +
+  geom_sf(data = Hague, color="black", linewidth = 1) +
+  geom_sf(data = EEZ, color="black", linetype = "dashed", linewidth  = 1) +
+  geom_sf(data = Land , color = "black", fill = "cornsilk") +
+  #coord_sf(xlim = c(-72, -47), ylim = c(41, 50), expand = FALSE) 
+  
+  #Add Trailing Edge
+  # Path connecting points by year
+  geom_path(data = Est_0.05_pts %>% 
+              st_coordinates() %>% 
+              as.data.frame() %>% 
+              cbind(Year = Est_0.05_pts$Year) %>% 
+              arrange(Year),
+            aes(x = X, y = Y, color = Year),
+            linewidth = 0.8) +
+  # Regular points for 0.05 quantile
+  geom_sf(data = Est_0.05_pts, 
+          aes(color = Year),
+          na.rm = TRUE, 
+          alpha = 1, 
+          size = 2, 
+          shape = 19)+
+  # Larger terminal point for 0.05 quantile (most recent year)
+  geom_sf(data = Est_0.05_pts[Est_0.05_pts$Year == max(Est_0.05_pts$Year, na.rm = TRUE), ],
+          aes(color = Year),
+          #position = pos_jitter, 
+          na.rm = TRUE, 
+          alpha = 1, 
+          size = 5, 
+          shape = 19) +
+  # Annotation for 0.05 quantile terminal point
+  annotate("text",
+           x=-64.5, y=42.1,
+           label = "Trailing Edge",
+           color = "black",
+           size = 5,
+           family = "serif") +
+  #add Leading Edge 
+  # Path connecting points by year
+  geom_path(data = Est_0.95_pts %>% 
+              st_coordinates() %>% 
+              as.data.frame() %>% 
+              cbind(Year = Est_0.95_pts$Year) %>% 
+              arrange(Year),
+            aes(x = X, y = Y, color = Year),
+            linewidth = 0.8) +
+  # Regular points for 0.95 quantile
+  geom_sf(data = Est_0.95_pts, 
+          aes(color = Year),
+          na.rm = TRUE, 
+          alpha = 1, 
+          size = 2, 
+          shape = 19)+
+  # Larger terminal point for 0.95 quantile (most recent year)
+  geom_sf(data = Est_0.95_pts[Est_0.95_pts$Year == max(Est_0.95_pts$Year, na.rm = TRUE), ],
+          aes(color = Year),
+          #position = pos_jitter, 
+          na.rm = TRUE, 
+          alpha = 1, 
+          size = 5, 
+          shape = 19) + 
+  # Annotation for 0.95 quantile terminal point  
+  annotate("text",
+           x=-53, y=45,
+           label = "Leading Edge",
+           color = "black",
+           size = 5,
+           family = "serif") +
+  # Blue to orange gradient for Year
+  scale_color_gradient2(low ="#005A9C",       ##"#0072B2", "#003366",  #"steelblue3"
+                        mid = "#FFD700",      #yellow", 
+                        high =  "orangered",  #"#D55E00",
+                        midpoint = 2005, 
+                        name = "Year") + 
+  # Labels and plot range
+  xlab("Range Edge W to E") +
+  ylab("Range Edge S to N") +
+  coord_sf(xlim = c(-80, -44), ylim = c(35, 55), expand = FALSE) +
+  # Theme
+  theme_bw() +
+  theme(
+    legend.position = "right",
+    plot.margin = margin(5, 10, 10, 10),
+    axis.text.x = element_text(size = 14, 
+                               family = "serif"),
+    axis.text.y = element_text(size = 14, 
+                               family = "serif"),
+    axis.title.x = element_text(size = 14, 
+                                hjust = 0.5, 
+                                vjust = -2, 
+                                family = "serif"),
+    axis.title.y = element_text(size = 14, 
+                                hjust = 0.5, 
+                                vjust = 4, 
+                                angle = 90, 
+                                family = "serif"),
+    legend.title = element_blank(),
+    legend.text = element_text(size = 14, family = "serif"),
+    strip.text = element_text(size = 14, 
+                              family = "serif", 
+                              angle = 0),
+    strip.background = element_rect(colour = "black", 
+                                    fill = "white"),
+    panel.grid.minor = element_blank(), panel.grid.major =  element_blank(),
+  )
+
+RangeEdge_Mapped
+```
+
+## 5. Centre of Gravity
+
+**Data: POC_COG.csv**
+
+Definition 
+
+* Region: USA, Canada
+
+* Year: 1990-2023 
+
+* Depth distribution values: Mean, Median, Q5, Q95 
+
+```{r COG data, echo=FALSE}
+POC_COG<-read.csv(here::here("Data/Data_for_POC/POC_COG.csv"))
+str(POC_COG)
+
+```
+
+### Trends in Centre of Gravity
+```{r COG plot, echo=FALSE, fig.width=6, fig.height=4}
+
+ggplot(POC_COG, 
+       aes(x = Year, y = Depth_Median , colour = Region, group = Region)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = Depth_Q5,
+                  ymax = Depth_Q95,
+                  fill = Region), 
+              alpha = 0.25, colour = NA) +
+  theme_bw() +
+  labs(x = "Year", y = "Depth",
+       colour = "Region", fill = "Region")
+```
+
