@@ -36,7 +36,7 @@ head(abundance_ind_Region_Sp)
   abundance_ind_Region_Sp$X <- 1:102
   str(abundance_ind_Region_Sp)
 #save
-write.csv(abundance_ind_Region_Sp,(here::here("Data/Data_for_POC/POC_Abundance.csv")), row.names = FALSE)
+write.csv(abundance_ind_Region_Sp,(here::here("Data/Data_SHinyApp_Proof_of_Concept/POC_Abundance.csv")), row.names = FALSE)
 
 #2 AREA OCCUPIED----
   #Data from 3.1 Data_prep.R, steps 2&3: 
@@ -129,7 +129,7 @@ AO3<-ggplot(area_thresholds_sub,
 AO1 + AO2 + AO3 + plot_layout(widths = c(1,1,1.2))
 
 #save
-write.csv(area_thresholds,(here::here("Data/Data_for_POC/POC_AreaOccupied.csv")), row.names = FALSE)
+write.csv(area_thresholds,(here::here("Data/Data_SHinyApp_Proof_of_Concept/POC_AreaOccupied.csv")), row.names = FALSE)
 
 #3 ABUNDANCE-WEIGHTED DEPTH----
   #Data from 8.1Deepening.R:
@@ -161,7 +161,7 @@ ggplot(D_data_Reg,
   theme_bw() +
   labs(x = "Year", y = "Depth",
        colour = "Region", fill = "Region")
-write.csv(D_data_Reg,(here::here("Data/Data_for_POC/POC_AWD.csv")), row.names = FALSE)
+write.csv(D_data_Reg,(here::here("Data/Data_SHinyApp_Proof_of_Concept/POC_AWD.csv")), row.names = FALSE)
 
 #4 RANGE EDGE----
   #from 7.1RangeEdge.R: Calculates 5th/50th/95th percentile of the spatial distribution (Weighted by abundance est,  quantile of the coordinate values)
@@ -171,7 +171,7 @@ write.csv(D_data_Reg,(here::here("Data/Data_for_POC/POC_AWD.csv")), row.names = 
 #these data area already subset to spring and represent the whole study area, but we can remove some useless fields
 RE_DAT$YearGroup   <- NULL
 RE_DAT$Season   <- NULL
-write.csv(RE_DAT,(here::here("Data/Data_for_POC/POC_RangeEdge.csv")), row.names = FALSE)
+write.csv(RE_DAT,(here::here("Data/Data_SHinyApp_Proof_of_Concept/POC_RangeEdge.csv")), row.names = FALSE)
 
 #5 CENTRE OF GRAVITY----
   #data from: 5.1Centre_of Gravity.R, 
@@ -185,7 +185,7 @@ write.csv(RE_DAT,(here::here("Data/Data_for_POC/POC_RangeEdge.csv")), row.names 
   names(centroid_data_Reg)[names(centroid_data_Reg) == "Stratum"] <- "Region" 
   centroid_data_Reg$Season  <- NULL 
   str(centroid_data_Reg)
-  write.csv(centroid_data_Reg,(here::here("Data/Data_for_POC/POC_COG.csv")), row.names = FALSE)
+  write.csv(centroid_data_Reg,(here::here("Data/Data_SHinyApp_Proof_of_Concept/POC_COG.csv")), row.names = FALSE)
 
 
 #6 DISTANCE TO SHARED BORDER----
@@ -217,7 +217,7 @@ ggplot(dist_hague_Reg2,
              colour = "Region", fill = "Region")  +
   geom_hline(yintercept = 0, color = "black", linetype = "dashed", linewidth = 0.8)
 
-write.csv(dist_hague_Reg2,(here::here("Data/Data_for_POC/POC_DtoB.csv")), row.names = FALSE)
+write.csv(dist_hague_Reg2,(here::here("Data/Data_SHinyApp_Proof_of_Concept/POC_DtoB.csv")), row.names = FALSE)
 
 
 
