@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(patchwork)
 library(here)
+library(terra)
 ```
 
 Assembled in **Prepare data for POC.R**, the **Data_SHinyApp_Proof_of_Concept folder** contains data for the temporal (and spatial where applicable*) timeseries for the 6 shift indicators, calculated based on Atlantic halibut abundance estimates form SDM output. All data have been subset to spring estimates.
@@ -63,6 +64,19 @@ ggplot(POC_Abundance,
   theme_bw() +
   labs(x = "Year", y = "Abundance Estimate",
        colour = "Region", fill = "Region")
+
+```
+
+### Annual rasters for total estimated abundance (Spring)
+
+These are in the **EstAbundanceRasters** folder 1990-2023,  for both raw and square root values. They were compiled in **EstAbundanceRasters.R**
+
+```{r abundance rasters, echo=FALSE, fig.width=4, fig.height=4}
+r_squrt <- rast(here::here("Data/Data_SHinyApp_Proof_of_Concept/EstAbundanceRasters/Est_Abun_Sqrt2022.tif"))
+r_raw <- rast(here::here("Data/Data_SHinyApp_Proof_of_Concept/EstAbundanceRasters/Est_Abun_Raw2022.tif"))
+
+plot(r_raw, main = "Raw Est 2022")
+plot(r_squrt, main = "Sqrt_Est_2022")
 
 ```
 
@@ -188,7 +202,7 @@ str(RE_DAT)
 library(sf)
 library(rnaturalearth)
 library(rnaturalearthdata)
-library(rnaturalearthhires)
+#library(rnaturalearthhires)
 library(dplyr)
 library(geosphere)
 library(ggpmisc)
