@@ -1,0 +1,154 @@
+
+
+/* ============ Various image and sizing ============== */
+
+.image-wrap {
+   float: left; /* or right */
+   margin-right: 15px; /* Adjust spacing as needed */
+   margin-bottom: 10px;
+}
+
+/* make the jumbotron contain floats */
+.jumbotron {
+  display: flow-root !important;
+  height: auto !important;   /* in case some framework set a fixed height */
+  overflow: visible !important;
+}
+
+/* image floating to the right and responsive */
+.wrap-image {
+  float: right;
+  margin: 0 0 10px 20px;
+  max-width: 30%;
+  height: auto;
+  display: block;
+}
+
+
+.flex-row {
+  display: flex;
+  align-items: stretch;
+}
+.flex-row > [class^='col-'],
+.flex-row > [class*=' col-'] {
+  display: flex;
+}
+.flex-row .card {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+/* 🔹 Remove the header area for cards in this row */
+.flex-row .card-header {
+  display: none !important;
+}
+
+/* 🔹 Tighten top padding now that header is gone */
+.flex-row .card-body {
+  padding-top: 1.5rem !important;
+}
+  
+  
+  
+
+ #mycarousel .carousel-control-next-icon,
+ #mycarousel .carousel-control-prev-icon {
+   filter: invert(1);
+ }
+ 
+ 
+/* Move them towards the edges using valid values */
+#mycarousel .carousel-control-prev {
+  justify-content: flex-start !important;
+}
+
+#mycarousel .carousel-control-next {
+  justify-content: flex-end !important;
+}
+
+
+
+
+ /* Make dots at the bottom black */
+ 
+ #mycarousel .carousel-indicators li {
+   background-color: black !important;
+ }
+
+ #mycarousel .carousel-indicators .active {
+   background-color: black !important;
+ }
+ 
+  
+.checkbox-grid .shiny-options-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px; /* row gap, column gap */
+}
+
+/* Each checkbox label becomes a flex item */
+.checkbox-grid .shiny-options-group .checkbox {
+  flex: 0 0 50px;  /* ~160px wide, wraps automatically */
+  margin: 0;
+}
+
+/* Optional: tighten spacing inside each checkbox */
+.checkbox-grid .shiny-options-group .checkbox label {
+  margin-bottom: 0;
+}
+  
+
+
+/* ============ Various text ============== */
+html, body {
+  font-size: 1em; /* or 110%, or a fixed size like 18px */
+}
+
+.control-sidebar-content a {
+  color: #17a2b8 !important
+}
+.control-sidebar-content a:hover {
+  color: #17a2b8 !important
+}
+
+.fixed-square {
+  width: 100%;
+  padding-bottom: 100%;      /* Always a square */
+  position: relative;
+  height: 100%;
+}
+.fixed-square > div {
+  position: absolute !important;
+  top: 0; left: 0;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+
+/* Prevent temporary stretching when sidebar collapses */
+.content-wrapper, .right-side, .main-sidebar {
+  transition: all 0.0s !important;
+}
+  
+  
+  
+#my_buttons .btn {
+  /* Reset padding to allow width to take effect, adjust as needed */
+   padding: 5px 10px;
+}
+/* Target the first button specifically */
+#my_buttons .btn:nth-child(1) {
+  width: 200px; /* Set a specific width for the first button */
+  text-align: center;
+}
+/* Target the second button specifically */
+#my_buttons .btn:nth-child(2) {
+  width: 100px; /* Set a specific width for the second button */
+  text-align: center;
+}
+    
+    
+.full-height-box .box-body {
+    height: 100%;
+}
+  
