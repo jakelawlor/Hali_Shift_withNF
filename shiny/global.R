@@ -62,28 +62,20 @@ sppx_plots <- list(
   p_pie_legend = readRDS("www/premade_plots/pie_legend.rds")
 )
 
-# remove sizing from pie charts
-sppx_plots$p_pie_Region1$x$layout$width  <- NULL
-sppx_plots$p_pie_Region1$x$layout$height <- NULL
-sppx_plots$p_pie_Region2$x$layout$width  <- NULL
-sppx_plots$p_pie_Region2$x$layout$height <- NULL
 
-
-# trend function for circle plots
-
+# trend function for circle plots --------------------------------------------
 trend_pal <- col_numeric(
   c("tomato2", "white", "cornflowerblue"),
   domain = c(-1, 1)
 )
 
-offsets <- c(Region1 = -0.1, Region2 = +0.1)
 
+# upload nafo zone names for download button choices ---------------------
 nafo_zone_names <- readRDS("www/nafo_zone_names.rds")
 
 
 
 # upload study area plot --------------------------------------------------
-
 study_area_imgs <- list(
   jurisdictional = "premade_plots/study_area.png"
 )

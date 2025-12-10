@@ -11,7 +11,6 @@ source("shiny/preprocessing_scripts/02.4_make_distance_to_border_plot.R")
 # make map plots
 source("shiny/preprocessing_scripts/02.5.1_prep_animated_map_data.R")
 source("shiny/preprocessing_scripts/02.5.2_make_animated_map_by_year.R")
-source("shiny/preprocessing_scripts/02.5.2_make_animated_map_clean.R")
 
 # pie charts
 source("shiny/preprocessing_scripts/03.1_make_circle_plot.R")

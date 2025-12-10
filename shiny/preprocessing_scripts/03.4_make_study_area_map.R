@@ -113,4 +113,6 @@ ggplot2::ggsave(
   dpi      = 150   # lower dpi = smaller file
 )
 
+
+rm(list = ls())
   
