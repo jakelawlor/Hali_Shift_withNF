@@ -1,3 +1,10 @@
+# Main UI Page for shiny app
+#
+# contains header, sidebar, control bar, footer, and body placements
+# note that body tabs (tabs 1-4) are created in separate scripts for organization
+
+
+
 dashboardPage(
   title = "Transboundary Range Shifts",
   
@@ -8,28 +15,11 @@ dashboardPage(
   fullscreen = TRUE,
   scrollToTop = TRUE,
   
-  
-  # random fixes
-  tags$script(HTML("
-  $(document).on('shiny:connected', function() {
-    var selector = '#mycarousel';
-    var nextCtrl = $(selector + ' .carousel-control-next');
-
-    // Make 'next' symmetric with 'prev'
-    nextCtrl.attr('data-target', selector);
-    nextCtrl.attr('href', '#');  // optional, for consistency
-  });
-")),
-  
   # Header ----
   header = dashboardHeader(
-    #status = "teal",
-    #title = "",
     title = dashboardBrand(
-      title = "Assessing Shifts",
-      # color = "teal",
+      title = app_text$header$title,
       image = "https://upload.wikimedia.org/wikipedia/commons/2/2c/Maple_leaf_transparent.png"
-     # image = "https://images.unsplash.com/photo-1539664030485-a936c7d29c6e?q=80&w=1160&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     ),
     controlbarIcon = icon("envelope"),
     fixed = TRUE
@@ -42,23 +32,23 @@ dashboardPage(
     sidebarMenu(
       id = "sidebarMenuid",
       menuItem(
-        "About",
+        text = app_text$header$item1,
         tabName = "about",
         icon = icon("circle-info")
       ),
       menuItem(
-        "Spatial Narrative",
+        text = app_text$header$item2,
         tabName = "spatial",
         icon = icon("earth-americas")
       ),
       menuItem(
-        "Science Details",
+        text = app_text$header$item3,
         tabName = "details",
         icon = icon("magnifying-glass")
       ),
       menuItem(
-        "Assessment Process",
-        tabName = "process",
+        text = app_text$header$item4,
+        tabName = "download",
         icon = icon("screwdriver-wrench")
       )
     )
@@ -72,52 +62,37 @@ dashboardPage(
       solidHeader = TRUE,
       title = NULL, 
       collapsible = FALSE,
-      h3("Contact"),
-      h4("Project Leads"),
-      strong("Nancy L Shackell"),
-      tags$a(
-        "Nancy.Shackell@dfo-mpo.gc.ca",
-        target = "_blank",
-        href = "mailto:Nancy.Shackell@dfo-mpo.gc.ca"
-      ),br(),
-      strong("Kiyomi Ferguson"),
-      tags$a(
-        "Kiyomi.Ferguson@dfo-mpo.gc.ca",
-        target = "_blank",
-        href = "mailto:Kiyomi.Ferguson@dfo-mpo.gc.ca"
-      ),
-
-      br(),
-      br(),
-      p("This work was conducted with the support of Department of Fisheries and Oceans, Canada, and the National Oceanic and Atmospheric Administration, USA.  ")
+      app_text$contact
     )
   ),
   
   # Footer ----
   footer = dashboardFooter(
-    "App development by Jake Lawlor\nc 2025",
+    app_text$footer
   ),
+  
   
   # Body ----
   body = dashboardBody(
     
+    # upload css
     tags$head(
       includeCSS(path = "www/style.css")
     ),
     
-    tags$script(HTML("
-    var resizeObserver = new ResizeObserver(entries => {
-      for (let entry of entries) {
-        Shiny.setInputValue('pie_resized', Math.random());
-      }
-    });
-    Shiny.addCustomMessageHandler('observePie', function(id) {
-      resizeObserver.observe(document.getElementById(id));
-    });
-  ")),
+    # css to try to make pie charts resize when the window resizes
+   tags$script(HTML("
+   var resizeObserver = new ResizeObserver(entries => {
+     for (let entry of entries) {
+       Shiny.setInputValue('pie_resized', Math.random());
+     }
+   });
+   Shiny.addCustomMessageHandler('observePie', function(id) {
+     resizeObserver.observe(document.getElementById(id));
+   });
+ ")),
     
-    
-
+   # show tabs------
     tabItems(
       
       # About tab ----
@@ -129,7 +104,6 @@ dashboardPage(
       # Spatial Data tab ----
       tabItem(
         tabName = "spatial",
-        
         Tab2(dat),
       ),
       
@@ -137,22 +111,19 @@ dashboardPage(
       # Scientific Details tab ----
       tabItem(
         tabName = "details",
-        
         Tab3(dat),
       ),
 
-        
-     
-      # Assessment Process Data tab ----
+      # Download Summary tab ----
       
       tabItem(
-        tabName = "process",
+        tabName = "download",
         Tab4(dat)
               
       )
     )
   )
-)
+) # end dashboard page
 
 
 

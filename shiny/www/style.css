@@ -100,8 +100,11 @@
 
 
 /* ============ Various text ============== */
+p {
+  font-size: 1.1em;
+}
 html, body {
-  font-size: 1em; /* or 110%, or a fixed size like 18px */
+  font-size: 1em; 
 }
 
 .control-sidebar-content a {
@@ -130,7 +133,14 @@ html, body {
   transition: all 0.0s !important;
 }
   
-  
+.fixed-square .html-widget,
+.fixed-square .plotly,
+.fixed-square .js-plotly-plot,
+.fixed-square .plot-container,
+.fixed-square .svg-container,
+.fixed-square .main-svg {
+  overflow: visible !important;
+}
   
 #my_buttons .btn {
   /* Reset padding to allow width to take effect, adjust as needed */
@@ -152,3 +162,12 @@ html, body {
     height: 100%;
 }
   
+  
+  
+.substep-block {
+  margin-left: 1.8em;   /* indent under Step 3 */
+}
+.substep-block p {
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
+}
